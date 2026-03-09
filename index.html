@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ポジティブ日記</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=BIZ+UDPGothic:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:       #e8f2fc;
+  --surface:  #ffffff;
+  --surf2:    #f0f7ff;
+  --blue:     #3a7bd5;
+  --blue-d:   #2563af;
+  --blue-l:   #93c5fd;
+  --sky:      #e0f0ff;
+  --text:     #1a3356;
+  --text2:    #3d5f8a;
+  --muted:    #7a9bbf;
+  --border:   rgba(58,123,213,0.18);
+  --shadow:   rgba(58,123,213,0.10);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'BIZ UDPGothic', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: -30%; right: -15%;
+  width: 70%; height: 70%;
+  background: radial-gradient(ellipse, rgba(147,197,253,0.35) 0%, transparent 65%);
+  pointer-events: none;
+  z-index: 0;
+}
+body::after {
+  content: '';
+  position: fixed;
+  bottom: -20%; left: -10%;
+  width: 55%; height: 55%;
+  background: radial-gradient(ellipse, rgba(191,219,254,0.28) 0%, transparent 65%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.wrapper {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 36px 20px 80px;
+  position: relative;
+  z-index: 1;
+}
+
+/* ---------- Header ---------- */
+.hdr { text-align: center; margin-bottom: 32px; }
+.hdr-date { font-size: 11px; letter-spacing: .3em; color: var(--blue); opacity: .8; margin-bottom: 8px; }
+.hdr-title { font-family: 'Noto Serif JP', serif; font-size: 30px; font-weight: 300; letter-spacing: .18em; color: var(--text); }
+.hdr-sub { font-size: 12px; color: var(--muted); margin-top: 8px; letter-spacing: .12em; }
+
+/* ---------- Tabs ---------- */
+.tabs {
+  display: flex; gap: 3px;
+  background: rgba(255,255,255,.65);
+  backdrop-filter: blur(8px);
+  border-radius: 14px; padding: 4px;
+  margin-bottom: 28px;
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 12px var(--shadow);
+}
+.tab {
+  flex: 1; padding: 10px 4px;
+  text-align: center; font-size: 12px; letter-spacing: .04em;
+  color: var(--muted); cursor: pointer;
+  border-radius: 10px; border: none;
+  background: transparent; font-family: inherit;
+  transition: all .22s;
+}
+.tab.on {
+  background: linear-gradient(135deg, var(--blue), var(--blue-d));
+  color: #fff;
+  box-shadow: 0 2px 10px rgba(58,123,213,.28);
+}
+.pane { display: none; }
+.pane.on { display: block; animation: fadein .25s ease; }
+@keyframes fadein { from { opacity:0; transform:translateY(5px); } to { opacity:1; transform:translateY(0); } }
+
+/* ---------- Card ---------- */
+.card {
+  background: rgba(255,255,255,.84);
+  border: 1px solid var(--border);
+  border-radius: 18px; padding: 22px;
+  margin-bottom: 14px;
+  box-shadow: 0 2px 16px var(--shadow);
+}
+.flabel {
+  font-size: 11px; letter-spacing: .22em;
+  color: var(--blue); font-weight: 700;
+  margin-bottom: 10px;
+}
+
+/* ---------- Inputs ---------- */
+textarea { display: block; width: 100%; height: 85px; resize: none; }
+input[type=text]     { display: block; width: 100%; }
+input[type=date]     { display: block; width: 100%; color-scheme: light; }
+input[type=password] { display: block; width: 100%; }
+
+textarea,
+input[type=text],
+input[type=date],
+input[type=password] {
+  background: var(--surf2);
+  border: 1px solid rgba(58,123,213,.14);
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 15px;
+  font-family: 'Noto Serif JP', serif;
+  font-weight: 300;
+  color: var(--text);
+  line-height: 1.8;
+  transition: border-color .2s, box-shadow .2s;
+}
+textarea:focus,
+input[type=text]:focus,
+input[type=date]:focus,
+input[type=password]:focus {
+  outline: none;
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(58,123,213,.12);
+  background: #fff;
+}
+textarea::placeholder, input::placeholder {
+  color: var(--muted); opacity: .65;
+  font-style: italic; font-size: 13px;
+}
+
+/* ---------- Buttons ---------- */
+.btn {
+  display: block; width: 100%;
+  padding: 13px; margin-top: 10px;
+  font-size: 14px; font-family: inherit; letter-spacing: .12em;
+  border: none; border-radius: 12px; cursor: pointer;
+  font-weight: 700; transition: all .2s;
+}
+.btn-blue {
+  background: linear-gradient(135deg, var(--blue), var(--blue-d));
+  color: #fff;
+  box-shadow: 0 3px 12px rgba(58,123,213,.25);
+}
+.btn-blue:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(58,123,213,.35); }
+.btn-blue.loading { opacity: .65; cursor: wait; }
+.btn-ghost {
+  background: var(--surf2);
+  border: 1px solid var(--border);
+  color: var(--blue);
+}
+.btn-ghost:hover { background: var(--sky); border-color: var(--blue-l); }
+.btn-danger {
+  background: #fff5f5;
+  border: 1px solid #fca5a5;
+  color: #b91c1c;
+}
+
+/* ---------- AI box ---------- */
+.ai-box {
+  display: none; margin-top: 18px;
+  background: linear-gradient(135deg, rgba(58,123,213,.07), rgba(147,197,253,.06));
+  border: 1px solid rgba(58,123,213,.22);
+  border-radius: 14px; padding: 18px 20px;
+  animation: fadein .45s ease;
+}
+.ai-box.on { display: block; }
+.ai-head {
+  font-size: 10px; letter-spacing: .28em;
+  color: var(--blue); font-weight: 700;
+  margin-bottom: 10px;
+}
+.spin { display: inline-block; animation: rot 2s linear infinite; }
+@keyframes rot { to { transform: rotate(360deg); } }
+.ai-body {
+  font-family: 'Noto Serif JP', serif;
+  font-size: 14px; line-height: 2;
+  color: var(--text2); font-weight: 300;
+  white-space: pre-wrap;
+}
+
+/* ---------- Section label ---------- */
+.sec {
+  font-size: 10px; letter-spacing: .32em;
+  color: var(--muted); font-weight: 700;
+  margin: 28px 0 14px;
+  display: flex; align-items: center; gap: 10px;
+}
+.sec::after {
+  content: ''; flex: 1; height: 1px;
+  background: linear-gradient(90deg, var(--border), transparent);
+}
+
+/* ---------- Entry ---------- */
+.ent {
+  background: rgba(255,255,255,.84);
+  border: 1px solid var(--border);
+  border-radius: 14px; padding: 18px 20px;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 8px var(--shadow);
+}
+.ent:hover { box-shadow: 0 4px 16px rgba(58,123,213,.14); }
+.ent-date { font-size: 10px; letter-spacing: .18em; color: var(--blue); font-weight: 700; margin-bottom: 12px; }
+.ent-row { margin-bottom: 9px; }
+.ent-key { font-size: 9px; letter-spacing: .22em; color: var(--muted); font-weight: 700; margin-bottom: 2px; }
+.ent-val { font-family: 'Noto Serif JP', serif; font-size: 14px; color: var(--text2); font-weight: 300; line-height: 1.9; }
+.ent-ai {
+  margin-top: 12px; padding-top: 12px;
+  border-top: 1px solid var(--border);
+  font-family: 'Noto Serif JP', serif;
+  font-size: 13px; color: var(--blue);
+  font-weight: 300; line-height: 1.9; opacity: .85;
+}
+.ent-ai-lbl { font-size: 9px; letter-spacing: .28em; color: var(--blue); display: block; margin-bottom: 3px; font-weight: 700; opacity: .65; }
+
+/* ---------- Event ---------- */
+.ev {
+  background: rgba(255,255,255,.84);
+  border: 1px solid var(--border);
+  border-radius: 14px; padding: 16px 18px;
+  margin-bottom: 10px;
+  display: flex; align-items: center; gap: 16px;
+  box-shadow: 0 1px 8px var(--shadow);
+}
+.ev:hover { box-shadow: 0 4px 16px rgba(58,123,213,.14); }
+.ev-cnt { text-align: center; min-width: 52px; }
+.ev-days { font-family: 'Noto Serif JP', serif; font-size: 28px; font-weight: 300; color: var(--blue); line-height: 1; }
+.ev-dlbl { font-size: 9px; letter-spacing: .18em; color: var(--muted); margin-top: 2px; font-weight: 700; }
+.ev-info { flex: 1; }
+.ev-name { font-family: 'Noto Serif JP', serif; font-size: 15px; color: var(--text); margin-bottom: 3px; }
+.ev-date { font-size: 11px; color: var(--muted); }
+.ev-del {
+  background: none; border: none; color: var(--muted);
+  cursor: pointer; font-size: 15px; padding: 4px 6px;
+  opacity: .45; border-radius: 6px; transition: opacity .2s;
+  font-family: inherit;
+}
+.ev-del:hover { opacity: 1; background: var(--sky); }
+
+/* ---------- Settings ---------- */
+.sblock {
+  background: rgba(255,255,255,.84);
+  border: 1px solid var(--border);
+  border-radius: 18px; padding: 22px;
+  margin-bottom: 14px;
+  box-shadow: 0 2px 16px var(--shadow);
+}
+.sblock h3 { font-size: 13px; letter-spacing: .14em; color: var(--blue); font-weight: 700; margin-bottom: 8px; }
+.sblock p { font-size: 12px; color: var(--muted); line-height: 1.8; margin-bottom: 14px; }
+.sblock a { color: var(--blue); }
+.srow { display: flex; gap: 8px; flex-wrap: wrap; }
+.srow .btn { flex: 1; min-width: 130px; }
+
+/* ---------- Status line ---------- */
+.sline {
+  font-size: 11px; color: var(--muted);
+  margin-top: 10px; padding: 9px 13px;
+  background: var(--surf2); border-radius: 8px;
+  border: 1px solid var(--border);
+  min-height: 36px; display: flex; align-items: center;
+}
+.sline.ok  { color: #1d4ed8; border-color: #bfdbfe; background: var(--sky); }
+.sline.err { color: #b91c1c; border-color: #fca5a5; background: #fff5f5; }
+
+/* ---------- Warn ---------- */
+.warn {
+  background: #fff8e1; border: 1px solid #fde68a;
+  border-radius: 10px; padding: 12px 14px;
+  font-size: 12px; color: #92400e; line-height: 1.7; margin-top: 10px;
+}
+
+/* ---------- Empty ---------- */
+.empty { text-align: center; padding: 48px 20px; color: var(--muted); font-size: 13px; line-height: 2.2; }
+
+/* ---------- Toast ---------- */
+.toast {
+  position: fixed; bottom: 28px; left: 50%;
+  transform: translateX(-50%) translateY(80px);
+  background: var(--text); border-radius: 12px;
+  padding: 11px 22px; font-size: 13px;
+  color: #fff; z-index: 999; white-space: nowrap;
+  transition: transform .3s;
+  box-shadow: 0 4px 20px rgba(26,51,86,.25);
+}
+.toast.on { transform: translateX(-50%) translateY(0); }
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-thumb { background: #bfdbfe; border-radius: 2px; }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <div class="hdr">
+    <div class="hdr-date" id="todayLabel"></div>
+    <div class="hdr-title">ポジティブ日記</div>
+    <div class="hdr-sub">小さな幸せを、記録していく</div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab on"  onclick="go('write')">✍️ 今日</button>
+    <button class="tab"     onclick="go('history')">📖 記録</button>
+    <button class="tab"     onclick="go('future')">🌟 予定</button>
+    <button class="tab"     onclick="go('settings')">⚙️ 設定</button>
+  </div>
+
+  <!-- ===== WRITE ===== -->
+  <div class="pane on" id="pane-write">
+    <div class="card">
+      <div class="flabel">🙏 今日感謝した人</div>
+      <textarea id="f-gratitude" placeholder="誰かへの感謝を書いてみましょう…"></textarea>
+    </div>
+    <div class="card">
+      <div class="flabel">✨ 今日良かったこと</div>
+      <textarea id="f-good" placeholder="どんな小さなことでも…"></textarea>
+    </div>
+    <div class="card">
+      <div class="flabel">💛 人に親切にしたこと</div>
+      <textarea id="f-kind" placeholder="誰かのためにしたことを…"></textarea>
+    </div>
+    <button class="btn btn-blue" id="saveBtn" onclick="saveEntry()">今日を保存する</button>
+    <div class="ai-box" id="aiBox">
+      <div class="ai-head"><span class="spin">✦</span> AI からひとこと</div>
+      <div class="ai-body" id="aiBody"></div>
+    </div>
+  </div>
+
+  <!-- ===== HISTORY ===== -->
+  <div class="pane" id="pane-history">
+    <div id="histList"></div>
+  </div>
+
+  <!-- ===== FUTURE ===== -->
+  <div class="pane" id="pane-future">
+    <div class="card">
+      <div class="flabel">📅 予定日</div>
+      <input type="date" id="f-edate">
+      <div class="flabel" style="margin-top:16px">🎉 楽しみな予定</div>
+      <input type="text" id="f-etext" placeholder="例：温泉旅行、コンサート…">
+      <button class="btn btn-blue" onclick="addEvent()">予定を追加する</button>
+    </div>
+    <div class="sec">登録済みの予定</div>
+    <div id="evList"></div>
+  </div>
+
+  <!-- ===== SETTINGS ===== -->
+  <div class="pane" id="pane-settings">
+
+    <!-- APIキー -->
+    <div class="sblock">
+      <h3>🔑 Anthropic API キー</h3>
+      <p>「AI からひとこと」機能に必要です。キーはこのブラウザにのみ保存されます。<br>
+        <a href="https://console.anthropic.com/settings/keys" target="_blank">→ APIキーを取得する</a>
+      </p>
+      <input type="password" id="f-apikey" placeholder="sk-ant-…" style="margin-bottom:10px">
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-ghost" style="margin-top:0;flex:1" onclick="saveApiKey()">💾 保存</button>
+        <button class="btn btn-ghost" style="margin-top:0;flex:1" onclick="showApiKey()">👁 確認</button>
+        <button class="btn btn-danger" style="margin-top:0;flex:1" onclick="clearApiKey()">🗑️ 削除</button>
+      </div>
+      <div class="sline" id="sl-apikey">— 未設定</div>
+    </div>
+
+    <!-- ブラウザ保存 -->
+    <div class="sblock">
+      <h3>🖥️ ブラウザ保存（自動）</h3>
+      <p>データはこのブラウザの localStorage に自動保存されています。</p>
+      <div class="sline ok" id="sl-browser">読み込み中…</div>
+    </div>
+
+    <!-- ファイルに保存 -->
+    <div class="sblock">
+      <h3>💾 ファイルに保存</h3>
+      <p>データを JSON ファイルに書き出します。Chrome / Edge は保存先を選択できます。</p>
+      <div class="srow">
+        <button class="btn btn-ghost" onclick="saveToFile()">📂 保存先を選んで保存</button>
+        <button class="btn btn-ghost" onclick="saveDL()">⬇️ ダウンロード</button>
+      </div>
+      <div class="sline" id="sl-save">— 未実行</div>
+    </div>
+
+    <!-- 読み込む -->
+    <div class="sblock">
+      <h3>📂 ファイルから読み込む</h3>
+      <p>以前に保存した JSON ファイルを選択してデータを復元します。</p>
+      <button class="btn btn-ghost" onclick="loadFile()">📁 ファイルを選んで読み込む</button>
+      <input type="file" id="f-file" accept=".json" style="display:none" onchange="loadFromInput(event)">
+      <div class="sline" id="sl-load">— 未実行</div>
+      <div class="warn">⚠️ 読み込むと現在のデータが上書きされます。先にバックアップを推奨します。</div>
+    </div>
+
+    <!-- リセット -->
+    <div class="sblock">
+      <h3>🗑️ データをリセット</h3>
+      <p>すべての日記・予定を削除します。取り消せません。</p>
+      <button class="btn btn-danger" onclick="resetAll()">すべて削除する</button>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+
+// ── State ────────────────────────────────────────────
+let entries = JSON.parse(localStorage.getItem('pdiary_entries') || '[]');
+let events  = JSON.parse(localStorage.getItem('pdiary_events')  || '[]');
+
+function persist() {
+  localStorage.setItem('pdiary_entries', JSON.stringify(entries));
+  localStorage.setItem('pdiary_events',  JSON.stringify(events));
+}
+
+// ── Toast ────────────────────────────────────────────
+let toastTimer;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('on');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('on'), 2600);
+}
+
+// ── Status line ──────────────────────────────────────
+function setsl(id, msg, cls='') {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.className = 'sline' + (cls ? ' '+cls : '');
+}
+
+// ── Tabs ─────────────────────────────────────────────
+const TABS = ['write','history','future','settings'];
+function go(name) {
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('on', TABS[i]===name));
+  document.querySelectorAll('.pane').forEach(p => p.classList.remove('on'));
+  document.getElementById('pane-'+name).classList.add('on');
+  if (name==='history')  renderHistory();
+  if (name==='future')   renderEvents();
+  if (name==='settings') refreshSettings();
+}
+
+// ── Write ─────────────────────────────────────────────
+async function saveEntry() {
+  const g  = document.getElementById('f-gratitude').value.trim();
+  const gd = document.getElementById('f-good').value.trim();
+  const k  = document.getElementById('f-kind').value.trim();
+  if (!g && !gd && !k) { toast('何か一つ書いてみましょう ✏️'); return; }
+
+  const btn = document.getElementById('saveBtn');
+  btn.classList.add('loading');
+  btn.textContent = '保存中…';
+
+  entries.unshift({ date: nowStr(), gratitude:g, good:gd, kind:k, ai:'' });
+  persist();
+
+  ['f-gratitude','f-good','f-kind'].forEach(id => document.getElementById(id).value='');
+  toast('保存しました 🌿');
+
+  const box  = document.getElementById('aiBox');
+  const body = document.getElementById('aiBody');
+  box.classList.add('on');
+  body.textContent = '考えています…';
+  btn.textContent  = 'AIコメント生成中…';
+
+  try {
+    const txt = await callClaude(g, gd, k);
+    body.textContent = txt;
+    entries[0].ai = txt;
+    persist();
+  } catch(e) {
+    if (e.message === 'nokey') {
+      body.textContent = '⚙️ 設定タブで Anthropic API キーを登録すると、AI からの個別コメントが届きます。';
+    } else {
+      body.textContent = '⚠️ エラー: ' + e.message;
+    }
+  }
+
+  btn.classList.remove('loading');
+  btn.textContent = '今日を保存する';
+}
+
+async function callClaude(g, gd, k) {
+  const key = localStorage.getItem('pdiary_apikey') || '';
+  if (!key) throw new Error('nokey');
+
+  const prompt = `あなたは優しく温かいライフコーチです。ユーザーが今日のポジティブ日記を書きました。内容を読んで、短い励ましと共感のコメントを日本語で書いてください（3〜4文程度）。具体的な内容に触れながら、自然で温かみのある言葉で。
+
+感謝した人：${g  || '（未記入）'}
+今日良かったこと：${gd || '（未記入）'}
+親切にしたこと：${k  || '（未記入）'}`;
+
+  const r = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': key,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1000,
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
+  if (!r.ok) {
+    let detail = '';
+    try { const j = await r.json(); detail = j.error?.message || JSON.stringify(j); } catch(_) {}
+    throw new Error(`HTTP ${r.status}: ${detail}`);
+  }
+  const d = await r.json();
+  return d.content.map(b=>b.text||'').join('').trim();
+}
+
+// ── History ───────────────────────────────────────────
+function renderHistory() {
+  const c = document.getElementById('histList');
+  if (!entries.length) { c.innerHTML='<div class="empty">まだ記録がありません。<br>今日の日記を書いてみましょう 🌱</div>'; return; }
+  c.innerHTML = '';
+  entries.forEach(e => {
+    const d = document.createElement('div');
+    d.className = 'ent';
+    d.innerHTML = `
+      <div class="ent-date">📅 ${e.date}</div>
+      ${e.gratitude ? `<div class="ent-row"><div class="ent-key">🙏 感謝</div><div class="ent-val">${e.gratitude}</div></div>` : ''}
+      ${e.good      ? `<div class="ent-row"><div class="ent-key">✨ 良かったこと</div><div class="ent-val">${e.good}</div></div>` : ''}
+      ${e.kind      ? `<div class="ent-row"><div class="ent-key">💛 親切</div><div class="ent-val">${e.kind}</div></div>` : ''}
+      ${e.ai        ? `<div class="ent-ai"><span class="ent-ai-lbl">✦ AI からひとこと</span>${e.ai}</div>` : ''}`;
+    c.appendChild(d);
+  });
+}
+
+// ── Events ────────────────────────────────────────────
+function addEvent() {
+  const date = document.getElementById('f-edate').value;
+  const text = document.getElementById('f-etext').value.trim();
+  if (!date||!text) { toast('日付と予定を入力してください'); return; }
+  events.push({date,text}); persist();
+  document.getElementById('f-edate').value='';
+  document.getElementById('f-etext').value='';
+  toast('予定を追加しました 🎉');
+  renderEvents();
+}
+
+function delEvent(i) {
+  if (!confirm(`「${events[i].text}」を削除しますか？`)) return;
+  events.splice(i,1); persist(); renderEvents();
+}
+
+function renderEvents() {
+  const c = document.getElementById('evList');
+  events.sort((a,b)=>new Date(a.date)-new Date(b.date));
+  if (!events.length) { c.innerHTML='<div class="empty">楽しみな予定を追加してみましょう 🌟</div>'; return; }
+  c.innerHTML='';
+  events.forEach((e,i) => {
+    const today=new Date(); today.setHours(0,0,0,0);
+    const diff=Math.ceil((new Date(e.date)-today)/86400000);
+    const d=document.createElement('div');
+    d.className='ev';
+    d.innerHTML=`
+      <div class="ev-cnt"><div class="ev-days">${Math.max(0,diff)}</div><div class="ev-dlbl">日後</div></div>
+      <div class="ev-info">
+        <div class="ev-name">${e.text}</div>
+        <div class="ev-date">${new Date(e.date).toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric'})}</div>
+      </div>
+      <button class="ev-del" onclick="delEvent(${i})">✕</button>`;
+    c.appendChild(d);
+  });
+}
+
+// ── Settings ─────────────────────────────────────────
+function refreshSettings() {
+  setsl('sl-browser', `✓ 自動保存が有効 — 日記 ${entries.length} 件・予定 ${events.length} 件`, 'ok');
+  const key = localStorage.getItem('pdiary_apikey');
+  if (key) {
+    setsl('sl-apikey', `✓ APIキー設定済み（${key.slice(0,14)}…）`, 'ok');
+  } else {
+    setsl('sl-apikey', '— 未設定');
+  }
+}
+
+function saveApiKey() {
+  const raw = document.getElementById('f-apikey').value;
+  const key = raw.trim();
+  if (!key) { setsl('sl-apikey','✗ キーを入力してください','err'); return; }
+  localStorage.setItem('pdiary_apikey', key);
+  document.getElementById('f-apikey').value = '';
+  setsl('sl-apikey', '✓ 保存しました — 「確認」ボタンで内容を検証してください', 'ok');
+  toast('APIキーを保存しました 🔑');
+}
+
+function showApiKey() {
+  const key = localStorage.getItem('pdiary_apikey');
+  if (!key) { setsl('sl-apikey','— 未設定'); return; }
+  setsl('sl-apikey', `保存済みキー: ${key}`, 'ok');
+  setTimeout(() => setsl('sl-apikey', `✓ 設定済み（${key.slice(0,16)}…, 全${key.length}文字）`, 'ok'), 8000);
+}
+
+function clearApiKey() {
+  if (!confirm('APIキーを削除しますか？')) return;
+  localStorage.removeItem('pdiary_apikey');
+  setsl('sl-apikey','— 削除しました');
+  toast('APIキーを削除しました');
+}
+
+function mkJSON() {
+  return JSON.stringify({entries,events,exportedAt:new Date().toISOString()},null,2);
+}
+function mkName() {
+  const d=new Date();
+  return `positive-diary-${d.getFullYear()}${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}.json`;
+}
+
+async function saveToFile() {
+  if (window.showSaveFilePicker) {
+    try {
+      const fh = await window.showSaveFilePicker({
+        suggestedName: mkName(),
+        types:[{description:'JSON',accept:{'application/json':['.json']}}]
+      });
+      const w = await fh.createWritable();
+      await w.write(mkJSON()); await w.close();
+      setsl('sl-save',`✓ 保存しました — ${fh.name}`,'ok');
+      toast('ファイルに保存しました 💾');
+    } catch(e) {
+      if (e.name!=='AbortError') { setsl('sl-save','✗ 保存に失敗。ダウンロードをお試しください','err'); }
+    }
+  } else { saveDL(); }
+}
+
+function saveDL() {
+  const a=document.createElement('a');
+  a.href='data:application/json;charset=utf-8,'+encodeURIComponent(mkJSON());
+  a.download=mkName(); a.click();
+  setsl('sl-save',`✓ ダウンロードしました — ${mkName()}`,'ok');
+  toast('ダウンロードしました ⬇️');
+}
+
+async function loadFile() {
+  if (window.showOpenFilePicker) {
+    try {
+      const [fh]=await window.showOpenFilePicker({types:[{description:'JSON',accept:{'application/json':['.json']}}]});
+      applyData(await (await fh.getFile()).text(), fh.name);
+    } catch(e) {
+      if (e.name!=='AbortError') document.getElementById('f-file').click();
+    }
+  } else { document.getElementById('f-file').click(); }
+}
+
+function loadFromInput(ev) {
+  const f=ev.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=e=>applyData(e.target.result,f.name);
+  r.readAsText(f); ev.target.value='';
+}
+
+function applyData(text, fname) {
+  try {
+    const d=JSON.parse(text);
+    if (!Array.isArray(d.entries)||!Array.isArray(d.events)) throw new Error();
+    if (!confirm(`「${fname}」を読み込みます。現在のデータは上書きされます。よろしいですか？`)) return;
+    entries=d.entries; events=d.events; persist();
+    setsl('sl-load',`✓ 読み込みました — ${fname}（日記 ${entries.length} 件・予定 ${events.length} 件）`,'ok');
+    toast('データを読み込みました 📂');
+    refreshSettings();
+  } catch(e) {
+    setsl('sl-load','✗ ファイルの形式が正しくありません','err');
+  }
+}
+
+function resetAll() {
+  if (!confirm('すべての日記と予定を削除します。取り消せません。よろしいですか？')) return;
+  entries=[]; events=[]; persist();
+  toast('リセットしました 🗑️');
+  refreshSettings();
+}
+
+// ── Util ─────────────────────────────────────────────
+function nowStr() {
+  return new Date().toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric',weekday:'short'});
+}
+
+// ── Init ─────────────────────────────────────────────
+document.getElementById('todayLabel').textContent =
+  new Date().toLocaleDateString('ja-JP',{year:'numeric',month:'long',day:'numeric',weekday:'long'});
+</script>
+</body>
+</html>

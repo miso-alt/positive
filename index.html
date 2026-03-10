@@ -337,12 +337,15 @@ input[type=date] { color-scheme: light; }
       <h3>🔑 Anthropic API キー</h3>
       <p>「AI からひとこと」機能に必要です。キーはこのブラウザにのみ保存されます。<br>
         <a href="https://console.anthropic.com/settings/keys" target="_blank">→ APIキーを取得する</a></p>
-      <input type="password" id="f-apikey" placeholder="sk-ant-…" style="margin-bottom:10px">
+      <div style="position:relative">
+        <input type="text" id="f-apikey" placeholder="sk-ant-…" style="margin-bottom:10px;font-size:12px;letter-spacing:.04em" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+      </div>
       <div class="srow">
         <button class="btn btn-ghost" style="margin-top:0" onclick="saveApiKey()">💾 保存</button>
         <button class="btn btn-ghost" style="margin-top:0" onclick="testApiKey()">🔍 接続テスト</button>
         <button class="btn btn-danger" style="margin-top:0" onclick="clearApiKey()">🗑️ 削除</button>
       </div>
+      <button class="btn btn-ghost" style="margin-top:8px;font-size:11px" onclick="showStoredKey()">👁️ 保存済みキーを確認（8秒表示）</button>
       <div class="sline" id="sl-apikey">— 未設定</div>
     </div>
 
@@ -627,8 +630,15 @@ function saveApiKey() {
   if (!key) { setsl('sl-apikey','✗ キーを入力してください','err'); return; }
   localStorage.setItem('pdiary_apikey', key);
   document.getElementById('f-apikey').value='';
-  setsl('sl-apikey', `✓ 保存しました（${key.slice(0,16)}…、全${key.length}文字）— 「接続テスト」で確認推奨`, 'ok');
+  setsl('sl-apikey', `✓ 保存しました — 全${key.length}文字、先頭: ${key.slice(0,10)}…末尾: …${key.slice(-6)}`, 'ok');
   toast('APIキーを保存しました 🔑');
+}
+
+function showStoredKey() {
+  const key = getKey();
+  if (!key) { setsl('sl-apikey','— 未設定'); return; }
+  setsl('sl-apikey', `📋 ${key}`, 'ok');
+  setTimeout(() => setsl('sl-apikey', `✓ 全${key.length}文字、先頭: ${key.slice(0,10)}…末尾: …${key.slice(-6)}`, 'ok'), 8000);
 }
 
 async function testApiKey() {
